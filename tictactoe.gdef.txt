@@ -1,0 +1,115 @@
+name: tictactoe
+players: 2
+size: 3 x 3
+
+obj X
+obj O
+
+/* definicja ukladu poczatkowego */
+start {
+	/* definiuje uklad poczatkowy planszy */
+	(0,0: empty), (0,1: empty), (0,2: empty),
+	(1,0: empty), (1,1: empty), (1,2: empty),
+	(2,0: empty), (2,2: empty)
+
+	/*pola tutaj niezdefiniowane bedą miały domyslna zawartosc empty np. pole o wsp 2,1 */ 
+}
+
+
+define isMoveLegal() ->bool {
+	/* przyklad komentarza, w tym bloku mozna odwolywac się do wbudowanej w jezyk struktury
+	Operations, ktora zawiera liste operacji clear i place, które gracz chce wykonac w swojej kolejce.
+	Mozna odwolywac sie tez do struktur CurrentPosition oraz History w celu wyciagniecia informacji o
+	aktualnej pozycji na planszy lub pozycjach z poprzednich tur rozgrywki */
+
+	if (operationsNum() != 1 || !isPlaceOperation(0)){  /* argumentem funkcji wbudowanej isPlaceOperation jest numer operacji z listy operacji ktore wykonal gracz w swojej kolejce*/
+		return false;
+	}
+	int xCord = OperationList[0][0];
+	int yCord = OperationList[0][1];	
+	obj placedObj = OperationList[0][2];
+
+	if (CurrentPosition[xCord][yCord] != empty || onTurn() == 0 && placedObj != X || onTurn() == 1 && placedObj != O){
+		return false;
+	} 	 
+
+	return true;
+}
+
+define end() ->bool{
+	/* definiuje funkcje sprawdzajaca czy pozycja gry jest terminalna */
+	if ( isXWinner() ){
+				
+		setWinner(0);
+
+		return true;		
+	} else if ( isOWinner() ){
+
+		setWinner(1);
+
+		return true;	
+	} else {
+		return false;
+	}
+}
+
+
+define isWinner(obj object) -> bool {
+	int collumn = 0;
+	int row = 0;
+	bool flag = true;
+
+	while(collumn < 3){
+		while(row < 3){
+			if(CurrentPosition[row][collumn] != object ){
+				flag = false;
+			}
+			row = row + 1;
+		}
+
+		if(flag == true){
+			return true;
+		}
+		flag = true;
+		collumn = collumn + 1;
+		row = 0;
+	}
+		
+	collumn = 0;
+	
+	while(row < 3){
+		while(collumn < 3){
+			if(CurrentPosition[row][collumn] != object ){
+				flag = false;
+			}
+			collumn = collumn + 1;
+		}
+		if(flag){
+			return true;
+		}
+
+		flag = true;
+		row = row + 1;
+		collumn = 0;
+	}
+
+	if (CurrentPosition[0][0] == object && CurrentPosition[1][1] == object && CurrentPosition[2][2] == object ){
+		return true;
+	} else
+	if (CurrentPosition[0][2] == object && CurrentPosition[1][1] == object && CurrentPosition[2][0] == object ){
+		return true;
+	}
+	else {
+		return false;
+	}	
+}
+
+define isXWinner() -> bool {
+	return isWinner(X);
+}
+
+define isOWinner() -> bool {
+	return isWinner(O);
+}
+
+

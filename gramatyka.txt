@@ -1,0 +1,199 @@
+Language = 					{definition};
+
+
+Definition = 	
+						DefGameParameter
+						| DefStart
+						| DefObject
+						| DefFunction ;
+
+
+DefGameParameter = 				Word, SymbolColon, ParameterValue;
+
+
+ParameterValue =				Word
+						| Integer, [ SymbolX, Integer ];
+
+
+DefStart = 					KeyWordStart, StartBlock;
+
+
+StartBlock = 					SymbolOpenCurlyBracket, start_block_content, SymbolCloseCurlyBracket;
+
+
+StartBlockContent = 				[SqueresDefinition] ;
+
+
+SqueresDefinition = 				SquereDefinition, {SymbolComma, SquereDefinition};
+
+
+SquereDefinition = 				SymbolOpenRoundBracket, Integer, SymbolComma , Integer, SymbolColon, DefinedObjectName, SymbolCloseRoundBracket;
+
+
+DefObject = 					KeyWordObj, word;
+
+
+
+DefFunction = 					KeyWordDefine, FunctionName, SymbolOpenRoundBracket, [ParametersList], SymbolCloseRoundBracket, [ReturnTypeDefinition], Block;
+
+
+ReturnTypeDefinition = 				SymbolArrow, TypeName;
+
+
+ParametersList = 				FunctionArgumentDeclaration, {SymbolComma , FunctionArgumentDeclaration } ;
+
+
+FunctionArgumentDeclaration = 			TypeName, VariableName;
+
+
+Block = 					SymbolOpenCurlyBracket, BlockContent , SymbolCloseCurlyBracket;
+
+
+BlockContent = 					{Statement};
+
+
+Statement =		 	  		WhileLoop
+						| IfStatement
+						| LocalVariableDeclaration
+						| ReturnStatement
+						| ValueAssignmentOrFunctionCall ;
+
+
+ReturnStatement =				KeyWordReturn, Expression, SymbolSemicolon; 
+
+
+
+ValueAssignmentOrFunctionCall = 		Word, ( (SymbolAssign, Expression) | ArgumentsClause ), SymbolSemicolon; 
+
+
+LocalVariableDeclaration =			TypeName, Word, SymbolAssign, Expression, SymbolSemicolon;
+
+
+WhileLoop = 					KeyWordWhile, SymbolOpenRoundBracket, Expression, SymbolCloseRoundBracket, Block;
+
+
+IfStatement = 					IfHeader, Block, [ElseClause];
+
+
+ElseClause = 					KeyWordElse, (Block | IfStatement);
+
+
+IfHeader = 					KeyWordIf, SymbolOpenRoundBracket, Expression, SymbolCloseRoundBracket;
+
+
+ArgumentsClause = 				SymbolOpenRoundBracket, [ArgumentsList], SymbolCloseRoundBracket;
+
+
+ArgumentsList = 				Expression , {SymbolComma, Expression };
+
+
+Expression = 					AndExpression, { SymbolOr, AndExpression};										
+AndExpression =					EqualityExpression, { SymbolAnd, EqualityExpression};		
+EqualityExpression =				RelationalExpression, [(SymbolEqual), RelationalExpression];
+RelationalExpression = 				AddSubstractExpression, [SymbolRelational, AddSubstractExpression];
+
+AddSubstractExpression = 			Term, {( SymbolAdd | SymbolSubstract ), Term };
+Term =						Primary, {(SymbolMultiply | SymbolDivide), Primary};
+Primary = 					[SymbolSubstract | SymbolNegation], (  Integer 
+											| FloatNumber 
+											| KeyWordTrue 
+											| KeyWordFalse 
+											| ParenthExpression
+											| Identificator);
+
+ParenthExpression =				SymbolOpenRoundBracket, Expression, SymbolCloseRoundBracket
+		
+Identificator = 				word, [ArgumentsClause | SquereBrackets];
+
+SquereBracket =					SymbolOpenSquereBracket, Expression, SymbolCloseSquereBracket;
+
+
+SquereBrackets =				SquereBracket, {SquereBracket}
+
+
+Integer = 	  				NonZeroDigit, {Digit} 
+						| Zero
+						;
+
+Word =						Letter, { Letter | Digit };
+
+
+Letter = 					LowerCaseLetter | UpperCaseLetter ;
+
+
+Number =					Integer | FloatNumber;
+
+
+FloatNumber = 					Integer, SymbolDot, Digit, {Digit};
+
+
+Digit = 					Zero | NonZeroDigit ;
+
+
+SymbolRelational =  				SymbolLess
+						| SymbolGreater
+						| SymbolLessEqual
+						| SymbolGreaterEqual
+						;
+
+SymbolNegation =				"!";			
+
+								
+TypeName = 
+						KeyWordInt
+						| KeyWordFloat
+						| KeyWordBool
+						| KeyWordObj
+
+SymbolAnd =					"&&" ;
+SymbolOr =					"||";
+
+SymbolLess =					"<";
+SymbolGreater =					">";
+SymbolLessEqual	=				"<=";
+SymbolGreaterEqual =				">=";
+SymbolEqual	=				"==";
+SymbolNotEqual =				"!=";
+								
+								
+KeyWordInt =					"int"
+KeyWordFloat = 					"float"
+KeyWordBool = 					"bool"
+KeyWordObj =					"obj"							
+KeyWordTrue =					"true";
+KeyWordFalse = 					"false";
+KeyWordElse = 					"else";
+KeyWordIf = 					"if";
+KeyWordWhile = 					"while";
+KeyWordDefine = 				"define";
+KeyWordReturn =					"return";
+KeyWordObj = 					"obj";
+KeyWordStart = 					"start";
+
+SymbolOpenRoundBracket = 			"(";
+SymbolCloseRoundBracket = 			")";
+SymbolOpenCurlyBracket = 			"{";
+SymbolCloseCurlyBracket = 			"}";
+SymbolOpenSquereBracket =			"[";
+SymbolCloseSquereBracket=			"]";
+
+SymbolSemicolon = 				";";
+SymbolArrow = 					"->";
+SymbolDot = 					".";
+SymbolColon =					":";
+SymbolComma =					",";
+
+Zero = 						"0";
+
+SymbolAdd =					"+";
+SymbolSubstract =				"-";
+SymbolMulptiply =				"*";
+SymbolDivide =					"/";
+
+SymbolAssign =					"=";
+
+SymbolX = 					"x"; 
+
+LowerCaseLetter = 				"a" | "b" | "c" | ... | "z" ;
+UpperCaseLetter = 				"A" | "B" | "C" | ... | "Z" ;
+NonZeroDigit = 					"1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
